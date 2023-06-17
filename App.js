@@ -1,20 +1,67 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import {ImageBackground, StyleSheet, Text, TextInput, View, TouchableOpacity,
-  Platform, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback
+  Platform, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback,
+  Dimensions,
 } from 'react-native';
-
+///
+import * as SplashScreen from 'expo-splash-screen';
+SplashScreen.preventAutoHideAsync();
+///|||
 const initialState = {
   login: '',
   email: '',
   password:''
 }
+/*  
+const loadApplication = async () => {
+  await Font.loadAsync({
+     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
+    "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
+    'Kablammo': require("./assets/fonts/Kablammo-Regular-VariableFont_MORF.ttf"),
+   })
+ }
+*/
 export default function App() {
   //console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
+ 
+  const [fontsLoaded] = useFonts({
+    'Roboto-Regular': require("./assets/fonts/Roboto-Regular.ttf"),
+    'Roboto-Medium': require("./assets/fonts/Roboto-Medium.ttf"),
+    'Kablammo': require("./assets/fonts/Kablammo-Regular-VariableFont_MORF.ttf"),
+  });
+ const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
+  // const windowDimensions = Dimensions.get('window');
+  const [dimensions, setDimensions] = useState(
+    Dimensions.get("window").width,
+  // { window: windowDimensions,}
+  );
+
+  useEffect(() => { 
+    const onChange = () => {
+      const width = Dimensions.get('window').width;
+      //console.log("width", width);
+      setDimensions(width);
+    };
+    const subscription = Dimensions.addEventListener('change', onChange);
+    return () => subscription?.remove();
+     //{Dimensions.removeEventListener('change', onChange); }
+   
+  }, []);
+  
    const KeyboardHide = () => {
      setIsShowKeyboard(false);
      Keyboard.dismiss();
@@ -30,12 +77,16 @@ export default function App() {
          source={require("./assets/images/bgimage.jpg")}
        >
          <KeyboardAvoidingView
-          //behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
          >
            <View style={{
              ...styles.form,
-             marginBottom: isShowKeyboard ? 10 : 0
-           }}>
+              marginBottom: isShowKeyboard ? 10 : 1,
+              // paddingBottom: isShowKeyboard ? 5 : 60,
+              width: dimensions,
+            }}
+              onLayout={onLayoutRootView}
+            >
          <Text style={styles.titleForm} >Реєстрація</Text>
           <TextInput
             placeholder="Логін"      
@@ -85,10 +136,10 @@ const styles = StyleSheet.create({
   image: {
     flex: 1,
      resizeMode: "cover",
-     //justifyContent: 'center',//////
+    // justifyContent: 'center',//////
      //justifyContent: 'flex-end',
-    //justifyContent: 'space-around'////
-    
+    justifyContent: 'space-around',////
+    //alignItems: 'center',//для dimensions
   },
    form: {
     backgroundColor: '#ffffff',
@@ -102,7 +153,7 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     textAlign: 'center', 
     fontSize: 30,
-    //fontFamily: 'Roboto-Medium',
+    fontFamily: 'Kablammo',
     color: '#212121',
     marginBottom: 32
   },
@@ -132,6 +183,7 @@ const styles = StyleSheet.create({
      fontSize: 16,
      justifyContent:'center',
      color: '#1b4371',
-     textAlign: 'center', //////?????
+       textAlign: 'center', //////?????
+     //fontFamily:"Roboto-Regular",//
   },
 });
