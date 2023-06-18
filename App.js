@@ -6,24 +6,16 @@ import {ImageBackground, StyleSheet, Text, TextInput, View, TouchableOpacity,
   Platform, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback,
   Dimensions,
 } from 'react-native';
-///
+
 import * as SplashScreen from 'expo-splash-screen';
 SplashScreen.preventAutoHideAsync();
-///|||
+
 const initialState = {
   login: '',
   email: '',
   password:''
 }
-/*  
-const loadApplication = async () => {
-  await Font.loadAsync({
-     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
-    "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
-    'Kablammo': require("./assets/fonts/Kablammo-Regular-VariableFont_MORF.ttf"),
-   })
- }
-*/
+
 export default function App() {
   //console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
@@ -34,10 +26,13 @@ export default function App() {
     'Roboto-Medium': require("./assets/fonts/Roboto-Medium.ttf"),
     'Kablammo': require("./assets/fonts/Kablammo-Regular-VariableFont_MORF.ttf"),
   });
- const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
-    }
+  useEffect(()=>{
+    const onLayoutRootView = async () => {
+      if (fontsLoaded) {
+        await SplashScreen.hideAsync();
+      }
+    };
+    onLayoutRootView();
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
@@ -58,8 +53,7 @@ export default function App() {
     };
     const subscription = Dimensions.addEventListener('change', onChange);
     return () => subscription?.remove();
-     //{Dimensions.removeEventListener('change', onChange); }
-   
+        
   }, []);
   
    const KeyboardHide = () => {
@@ -71,7 +65,9 @@ export default function App() {
   
   return (
     <TouchableWithoutFeedback onPress={KeyboardHide}>
-    <View style={styles.container}>
+      <View style={styles.container}
+      //onLayout={onLayoutRootView}
+      >
       <ImageBackground
          style={styles.image} 
          source={require("./assets/images/bgimage.jpg")}
@@ -84,9 +80,7 @@ export default function App() {
               marginBottom: isShowKeyboard ? 10 : 1,
               // paddingBottom: isShowKeyboard ? 5 : 60,
               width: dimensions,
-            }}
-              onLayout={onLayoutRootView}
-            >
+            }}>
          <Text style={styles.titleForm} >Реєстрація</Text>
           <TextInput
             placeholder="Логін"      
