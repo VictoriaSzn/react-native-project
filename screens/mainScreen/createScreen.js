@@ -16,7 +16,7 @@ const CreateScreen = ({navigation}) => {
    };
     
     const sendPhoto = async () => {
-        navigation.navigate("Posts", {photo});
+        navigation.navigate("DefaultScreen", {photo});
     }
     useEffect(() => {
     (async () => {
