@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { useCallback, useState, useEffect } from 'react';
@@ -6,6 +6,9 @@ import {ImageBackground, StyleSheet, Text, TextInput, View, TouchableOpacity,
   Platform, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback,
   Dimensions,
 } from 'react-native';
+
+import { useDispatch } from 'react-redux';
+import { authSignOut, authSignUp } from "../../redax/auth/authOperation";
 
 const initialState = {
   login: '',
@@ -17,7 +20,9 @@ export default function RegisterScreen({navigation}) {
   //console.log(Platform.OS);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setState] = useState(initialState);
- 
+
+  const dispatch = useDispatch();
+
  const [dimensions, setDimensions] = useState(
     Dimensions.get("window").width
   );
@@ -33,15 +38,15 @@ export default function RegisterScreen({navigation}) {
         
   }, []);
   
-   const KeyboardHide = () => {
+   const handleSubmit = () => {
      setIsShowKeyboard(false);
      Keyboard.dismiss();
+     dispatch(authSignUp(state));
      setState(initialState);
-     //console.log(state);
    }
   
   return (
-    <TouchableWithoutFeedback onPress={KeyboardHide}>
+    <TouchableWithoutFeedback onPress={handleSubmit}>
       <View style={styles.container}>
       <ImageBackground
          style={styles.image} 
@@ -84,7 +89,7 @@ export default function RegisterScreen({navigation}) {
            <TouchableOpacity
               style={styles.btn}
               activeOpacity={0.8}
-             onPress={KeyboardHide}
+             onPress={handleSubmit}
            >
              <Text style={styles.btnTitle}>Зареєструватись</Text>
             </TouchableOpacity>
